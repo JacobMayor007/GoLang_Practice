@@ -344,63 +344,142 @@
 
 // }
 
+// package main
+
+// import "fmt"
+
+// type formatter interface {
+// 	format() string
+// }
+
+// func sendMessage(f formatter) string {
+
+// 	switch v := f.(type) {
+// 	case plainText:
+// 		return v.message
+// 	case bold:
+// 		return "**" + v.message + "**"
+// 	case code:
+// 		return "`" + v.message + "`"
+// 	default:
+// 		return "Error"
+// 	}
+// }
+
+// type plainText struct {
+// 	message string
+// }
+
+// type bold struct {
+// 	message string
+// }
+
+// type code struct {
+// 	message string
+// }
+
+// func (pt plainText) format() string {
+// 	return pt.message
+// }
+// func (b bold) format() string {
+// 	return b.message
+// }
+// func (c code) format() string {
+// 	return c.message
+// }
+
+// func main() {
+// 	pt := plainText{
+// 		message: "Hello World",
+// 	}
+// 	b := bold{
+// 		message: "Hello World",
+// 	}
+// 	c := code{
+// 		message: "Hello World",
+// 	}
+
+// 	fmt.Println(sendMessage(pt))
+// 	fmt.Println(sendMessage(b))
+// 	fmt.Println(sendMessage(c))
+// }
+
 package main
 
 import "fmt"
 
-type formatter interface {
-	format() string
+type notification interface {
+	importance() int
 }
 
-func sendMessage(f formatter) string {
+type directMessage struct {
+	senderUsername string
+	messageContent string
+	priorityLevel  int
+	isUrgent       bool
+}
 
-	switch v := f.(type) {
-	case plainText:
-		return v.message
-	case bold:
-		return "**" + v.message + "**"
-	case code:
-		return "`" + v.message + "`"
-	default:
-		return "Error"
+type groupMessage struct {
+	groupName      string
+	messageContent string
+	priorityLevel  int
+}
+
+type systemAlert struct {
+	alertCode      string
+	messageContent string
+}
+
+func (dm directMessage) importance() int {
+	if dm.isUrgent {
+		return 50
 	}
+
+	return dm.priorityLevel
 }
 
-type plainText struct {
-	message string
+func (gm groupMessage) importance() int {
+	return gm.priorityLevel
 }
 
-type bold struct {
-	message string
+func (sa systemAlert) importance() int {
+	return 100
 }
 
-type code struct {
-	message string
-}
+func processNotification(n notification) (string, int) {
 
-func (pt plainText) format() string {
-	return pt.message
-}
-func (b bold) format() string {
-	return b.message
-}
-func (c code) format() string {
-	return c.message
+	switch nn := n.(type) {
+	case directMessage:
+		return nn.senderUsername, nn.importance()
+	case groupMessage:
+		return nn.groupName, nn.importance()
+	case systemAlert:
+		return nn.alertCode, nn.importance()
+	default:
+		return "Error", 0
+	}
 }
 
 func main() {
-	pt := plainText{
-		message: "Hello World",
+	dm := directMessage{
+		senderUsername: "Jacob",
+		messageContent: "Hello World",
+		priorityLevel:  25,
+		isUrgent:       false,
 	}
-	b := bold{
-		message: "Hello World",
-	}
-	c := code{
-		message: "Hello World",
+	gm := groupMessage{
+		groupName:      "PSS",
+		messageContent: "Hello World",
+		priorityLevel:  25,
 	}
 
-	fmt.Println(sendMessage(pt))
-	fmt.Println(sendMessage(b))
-	fmt.Println(sendMessage(c))
+	sa := systemAlert{
+		alertCode:      "jk0=921",
+		messageContent: "Hello World",
+	}
+
+	fmt.Println(processNotification(dm))
+	fmt.Println(processNotification(gm))
+	fmt.Println(processNotification(sa))
 
 }
