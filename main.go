@@ -1,85 +1,72 @@
-// // package main
-
-// // import "fmt"
-
-// // type authenticationInfo struct {
-// // 	username string
-// // 	password string
-// // }
-
-// // func (auth authenticationInfo) getBasicAuth() (string, string) {
-// // 	return auth.username, auth.password
-// // }
-
-// // func main() {
-// // 	var auth = authenticationInfo{
-// // 		username: "Jacob",
-// // 		password: "123123",
-// // 	}
-
-// // 	username, password := (auth.getBasicAuth())
-
-// // 	fmt.Printf("Username: %v\nPassword: %v\n", username, password)
-
-// // }
-
-// // package main
-
-// // import (
-// // 	"fmt"
-// // )
-
-// // func sendMessage(msg message) (string, int) {
-// // 	return msg.getMessage(), len(msg.getMessage())
-// // }
-
-// // type message interface {
-// // 	getMessage() string
-// // }
-
-// // // don't edit below this line
-
-// // type birthdayMessage struct {
-// // 	birthdayTime  int
-// // 	recipientName string
-// // }
-
-// // func (bm birthdayMessage) getMessage() string {
-// // 	return fmt.Sprintf("Hi %s, it is your birthday on %v", bm.recipientName, bm.birthdayTime)
-// // }
-
-// // type sendingReport struct {
-// // 	reportName    string
-// // 	numberOfSends int
-// // }
-
-// // func (sr sendingReport) getMessage() string {
-// // 	return fmt.Sprintf(`Your "%s" report is ready. You've sent %v messages.`, sr.reportName, sr.numberOfSends)
-// // }
-
-// // func main() {
-// // 	var birthMessage = birthdayMessage{
-// // 		birthdayTime:  24,
-// // 		recipientName: "Jacob Mary Tapere",
-// // 	}
-
-// // 	var sR = sendingReport{
-// // 		reportName:    "Jacob Mary Tapere",
-// // 		numberOfSends: 24,
-// // 	}
-
-// // 	content, cost := sendMessage(birthMessage)
-// // 	fmt.Println(content, cost)
-// // 	content2, cost2 := sendMessage(sR)
-// // 	fmt.Println(content2, cost2)
-// // }
-
 // package main
 
-// import (
-// 	"fmt"
-// 	"reflect"
-// )
+// import "fmt"
+
+// type authenticationInfo struct {
+// 	username string
+// 	password string
+// }
+
+// func (auth authenticationInfo) getBasicAuth() (string, string) {
+// 	return auth.username, auth.password
+// }
+
+// func main() {
+// 	var auth = authenticationInfo{
+// 		username: "Jacob",
+// 		password: "123123",
+// 	}
+
+// 	username, password := (auth.getBasicAuth())
+
+// 	fmt.Printf("Username: %v\nPassword: %v\n", username, password)
+
+// }
+
+// func sendMessage(msg message) (string, int) {
+// 	return msg.getMessage(), len(msg.getMessage())
+// }
+
+// type message interface {
+// 	getMessage() string
+// }
+
+// // don't edit below this line
+
+// type birthdayMessage struct {
+// 	birthdayTime  int
+// 	recipientName string
+// }
+
+// func (bm birthdayMessage) getMessage() string {
+// 	return fmt.Sprintf("Hi %s, it is your birthday on %v", bm.recipientName, bm.birthdayTime)
+// }
+
+// type sendingReport struct {
+// 	reportName    string
+// 	numberOfSends int
+// }
+
+// func (sr sendingReport) getMessage() string {
+// 	return fmt.Sprintf(`Your "%s" report is ready. You've sent %v messages.`, sr.reportName, sr.numberOfSends)
+// }
+
+// func main() {
+// 	var birthMessage = birthdayMessage{
+// 		birthdayTime:  24,
+// 		recipientName: "Jacob Mary Tapere",
+// 	}
+
+// 	var sR = sendingReport{
+// 		reportName:    "Jacob Mary Tapere",
+// 		numberOfSends: 24,
+// 	}
+
+// 	content, cost := sendMessage(birthMessage)
+// 	fmt.Println(content, cost)
+// 	content2, cost2 := sendMessage(sR)
+// 	fmt.Println(content2, cost2)
+// }
 
 // type User interface {
 // 	Login(email, password string) bool
@@ -173,8 +160,6 @@
 
 // }
 
-// package main
-
 // import "fmt"
 
 // func main() {
@@ -255,7 +240,7 @@
 
 // }
 
-//WRONG
+// WRONG
 
 // func getExpenseReport(e expense) (string, float64) {
 
@@ -284,7 +269,7 @@
 // 	// return "", 0.0
 // }
 
-//WRONG
+// WRONG
 
 // func getExpenseReport(e expense) (string, float64) {
 // 	switch v := e.(type) {
@@ -302,7 +287,7 @@
 // 	return "", 0.0
 // }
 
-// // don't touch below this line
+// don't touch below this line
 
 // type expense interface {
 // 	cost() float64
@@ -361,12 +346,61 @@
 
 package main
 
-// Don't Touch below this line
+import "fmt"
 
 type formatter interface {
-	format()
+	format() string
 }
 
-func sendMessage(format formatter) string {
-	return format.format() // Adjusted to call Format without an argument
+func sendMessage(f formatter) string {
+
+	switch v := f.(type) {
+	case plainText:
+		return v.message
+	case bold:
+		return "**" + v.message + "**"
+	case code:
+		return "`" + v.message + "`"
+	default:
+		return "Error"
+	}
+}
+
+type plainText struct {
+	message string
+}
+
+type bold struct {
+	message string
+}
+
+type code struct {
+	message string
+}
+
+func (pt plainText) format() string {
+	return pt.message
+}
+func (b bold) format() string {
+	return b.message
+}
+func (c code) format() string {
+	return c.message
+}
+
+func main() {
+	pt := plainText{
+		message: "Hello World",
+	}
+	b := bold{
+		message: "Hello World",
+	}
+	c := code{
+		message: "Hello World",
+	}
+
+	fmt.Println(sendMessage(pt))
+	fmt.Println(sendMessage(b))
+	fmt.Println(sendMessage(c))
+
 }
